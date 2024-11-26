@@ -1,3 +1,4 @@
+// src/app/profile/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,7 +7,6 @@ import { User } from '@supabase/supabase-js'
 import { toast } from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import StoryList from '@/components/stories/StoryList'
 import { Story } from '@/lib/types'
 import { MapIcon, BookOpenIcon, SettingsIcon } from 'lucide-react'
 
@@ -146,7 +146,7 @@ export default function Profile() {
           )}
         </div>
 
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-bold mb-4">Statistics</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
@@ -158,11 +158,6 @@ export default function Profile() {
               <span>{stories.reduce((acc, story) => acc + (story.views || 0), 0)} Total Views</span>
             </div>
           </div>
-        </div>
-
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4">Your Stories</h2>
-          <StoryList stories={stories} onDelete={fetchUserStories} editable />
         </div>
       </div>
     </div>

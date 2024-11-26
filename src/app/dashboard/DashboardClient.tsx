@@ -1,8 +1,10 @@
+// src/app/dashboard/DashboardClient.tsx
+
 'use client'
 
 import { Session } from '@supabase/supabase-js'
 import Map from '@/components/map/Map'
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Story } from '@/lib/types'
 import { toast } from 'react-hot-toast'
@@ -13,49 +15,50 @@ interface DashboardClientProps {
 
 export default function DashboardClient({ session }: DashboardClientProps) {
   const [stories, setStories] = useState<Story[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const mapPositionRef = useRef<{ center: [number, number]; zoom: number }>({
+    center: [-74.5, 40],
+    zoom: 3
+  })
   const supabase = createClientComponentClient()
 
   useEffect(() => {
     fetchStories()
-    
-    // Subscribe to new stories
-    const channel = supabase
-      .channel('stories')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'stories' }, 
-        () => {
-          fetchStories()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
   }, [])
 
   const fetchStories = async () => {
-    const { data, error } = await supabase
-      .from('stories')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      setIsLoading(true)
+      const { data, error } = await supabase
+        .from('stories')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      toast.error('Failed to fetch stories')
-      return
+      if (error) throw error
+      setStories(data || [])
+    } catch (error) {
+      console.error('Error fetching stories:', error)
+    } finally {
+      setIsLoading(false)
     }
-
-    setStories(data || [])
   }
 
-  const handleStoryCreate = async (story: Story) => {
-    setStories(prevStories => [story, ...prevStories])
-    await fetchStories() // Refresh all stories
+  const handleStoryCreate = (newStory: Story) => {
+    setStories(prev => [newStory, ...prev])
   }
 
-  const handleStoryDelete = async (id: string) => {
-    setStories(stories.filter(story => story.id !== id))
-    await fetchStories() // Refresh all stories
+  const handleStoryDelete = (id: string) => {
+    setStories(prev => prev.filter(story => story.id !== id))
+  }
+
+  const handleMapMove = (center: [number, number], zoom: number) => {
+    mapPositionRef.current = { center, zoom }
+  }
+
+  if (isLoading) {
+    return <div className="h-full w-full flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
   }
 
   return (
@@ -66,6 +69,8 @@ export default function DashboardClient({ session }: DashboardClientProps) {
         stories={stories}
         onStoryCreate={handleStoryCreate}
         onStoryDelete={handleStoryDelete}
+        onMapMove={handleMapMove}
+        initialPosition={mapPositionRef.current}
       />
     </div>
   )

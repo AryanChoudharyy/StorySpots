@@ -1,3 +1,4 @@
+// src/components/layout/Navbar.tsx
 'use client'
 
 import Link from 'next/link'
@@ -39,6 +40,12 @@ export function Navbar({ session }: NavbarProps) {
                   className="px-3 py-2 rounded-md hover:bg-gray-100"
                 >
                   Dashboard
+                </Link>
+                <Link 
+                  href="/my-stories" 
+                  className="px-3 py-2 rounded-md hover:bg-gray-100"
+                >
+                  My Stories
                 </Link>
                 <Link 
                   href="/profile" 
@@ -107,6 +114,12 @@ export function Navbar({ session }: NavbarProps) {
                 className="block px-3 py-2 rounded-md hover:bg-gray-100"
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/my-stories"
+                className="block px-3 py-2 rounded-md hover:bg-gray-100"
+              >
+                My Stories
               </Link>
               <Link
                 href="/profile"

@@ -10,18 +10,19 @@ export interface Location {
     avatar_url?: string
   }
   
-  export interface Story {
-    id: string;
-    title: string;
-    content: string;
-    location: {
-      lat: number;
-      lng: number;
-    };
-    image_url?: string;
-    user_id: string;
-    created_at: string;
+  // src/lib/types/index.ts
+export interface Story {
+  id: string
+  title: string
+  content: string
+  location: {
+    lat: number
+    lng: number
   }
+  image_url?: string
+  user_id: string
+  created_at: string
+}
   
   export interface Profile {
     id: string
